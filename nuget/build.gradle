@@ -126,7 +126,7 @@ project.tasks.create('generateNugetPackage', Exec) {
 }
 
 project.tasks.create('generateStaticNugetPackage', Exec) {
-    dependsOn copyArtifacts
+    dependsOn copyStaticArtifacts
 
     executable 'dotnet'
     args 'pack'
