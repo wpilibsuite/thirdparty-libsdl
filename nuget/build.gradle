@@ -40,10 +40,14 @@ def products = file('products')
 def pubVersion = file('products/version.txt').text.trim().replaceAll('-','.')
 
 def foundArtifacts = []
+def foundStaticArtifacts = []
 
 products.eachFile {
     if (it.name.contains('sharedcrt')) {
         foundArtifacts << it
+    }
+    if (it.name.contains('staticcrt')) {
+        foundStaticArtifacts << it
     }
 }
 
@@ -60,19 +64,41 @@ foundArtifacts.each { artifact ->
 }
 
 def artifactMap = [
-    "${buildDir}/unzipped/windows/x86-64/shared/SDL3.dll": "win-x64/native",
-    "${buildDir}/unzipped/windows/arm64/shared/SDL3.dll": "win-arm64/native",
-    "${buildDir}/unzipped/osx/universal/shared/libSDL3.dylib": "osx-x64/native",
-    "${buildDir}/unzipped/linux/x86-64/shared/libSDL3.so": "linux-x64/native",
+    "${buildDir}/unzipped/windows/x86-64/shared/SDL3.dll": "runtimes/win-x64/native",
+    "${buildDir}/unzipped/windows/arm64/shared/SDL3.dll": "runtimes/win-arm64/native",
+    "${buildDir}/unzipped/osx/universal/shared/libSDL3.dylib": "runtimes/osx-arm64/native",
+    "${buildDir}/unzipped/linux/x86-64/shared/libSDL3.so": "runtimes/linux-x64/native",
+]
+
+def staticArtifactMap = [
+    "${buildDir}/unzipped/windows/x86-64/static/SDL3.lib": "static/win-x64",
+    "${buildDir}/unzipped/windows/arm64/static/SDL3.lib": "static/win-arm64",
+    "${buildDir}/unzipped/osx/universal/static/libSDL3.a": "static/osx-arm64",
+    "${buildDir}/unzipped/linux/x86-64/static/libSDL3.a": "static/linux-x64",
 ]
 
 task copyArtifacts(type: Copy) {
     dependsOn unzipAll
-    destinationDir = file("${projectDir}/WPILib.DriverStation.SDL.runtime/runtimes")
+    destinationDir = file("${projectDir}/WPILib.DriverStation.SDL.runtime")
     artifactMap.each { src, dest ->
         if (src.contains("libSDL3.dylib")) {
             from (src) {
-                into "osx-arm64/native"
+                into "runtimes/osx-x64/native"
+            }
+        }
+        from (src) {
+            into dest
+        }
+    }
+}
+
+task copyStaticArtifacts(type: Copy) {
+    dependsOn unzipAll
+    destinationDir = file("${projectDir}/WPILib.DriverStation.SDL.staticruntime")
+    staticArtifactMap.each { src, dest ->
+        if (src.contains("universal/static/libSDL3.a")) {
+            from (src) {
+                into "static/osx-x64"
             }
         }
         from (src) {
@@ -91,8 +117,23 @@ project.tasks.create('generateNugetPackage', Exec) {
     args "/p:Version=${pubVersion}"
 }
 
-project.tasks.create('publishNugetPackage', Exec) {
+project.tasks.create('generateStaticNugetPackage', Exec) {
+    dependsOn copyArtifacts
+
+    executable 'dotnet'
+    args 'pack'
+    args 'WPILib.DriverStation.SDL.runtime/WPILib.DriverStation.SDL.staticruntime.csproj'
+    args '-o', file("${buildDir}/nugetpackages")
+    args "/p:Version=${pubVersion}"
+}
+
+project.tasks.create('generateNugetPackages') {
     dependsOn generateNugetPackage
+    dependsOn generateStaticNugetPackage
+}
+
+project.tasks.create('publishNugetPackages', Exec) {
+    dependsOn generateNugetPackages
 
     executable 'dotnet'
     args 'nuget'
@@ -100,6 +141,15 @@ project.tasks.create('publishNugetPackage', Exec) {
     args "${buildDir}/nugetpackages/WPILib.DriverStation.SDL.runtime.${pubVersion}.nupkg"
     args '--source'
     args "https://wpilib.jfrog.io/artifactory/api/nuget/wpilib-nuget-development-local/WPILib.DriverStation.SDL.runtime/${pubVersion}"
+    args '--api-key'
+    args (System.getenv('ARTIFACTORY_PUBLISH_USERNAME') + ':' + System.getenv('ARTIFACTORY_PUBLISH_PASSWORD'))
+
+    executable 'dotnet'
+    args 'nuget'
+    args 'push'
+    args "${buildDir}/nugetpackages/WPILib.DriverStation.SDL.staticruntime.${pubVersion}.nupkg"
+    args '--source'
+    args "https://wpilib.jfrog.io/artifactory/api/nuget/wpilib-nuget-development-local/WPILib.DriverStation.SDL.staticruntime/${pubVersion}"
     args '--api-key'
     args (System.getenv('ARTIFACTORY_PUBLISH_USERNAME') + ':' + System.getenv('ARTIFACTORY_PUBLISH_PASSWORD'))
 }

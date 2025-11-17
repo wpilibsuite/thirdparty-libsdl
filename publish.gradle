@@ -81,7 +81,7 @@ task cppSourcesZip(type: Zip) {
   project.addTaskToCopyAllOutputs(it)
 }
 
-def types = ['DebugStatic', 'DebugShared', 'DebugSharedCrt', 'ReleaseStatic', 'ReleaseShared', 'ReleaseSharedCrt']
+def types = ['DebugStatic', 'DebugShared', 'DebugSharedCrt', 'DebugStaticCrt', 'ReleaseStatic', 'ReleaseShared', 'ReleaseSharedCrt', 'ReleaseStaticCrt']
 types.each { type ->
     project.tasks.create("cpp${type}LibrariesZip", Zip) {
         dependsOn "libSDL${type}"

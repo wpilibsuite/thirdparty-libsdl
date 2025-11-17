@@ -1,0 +1,9 @@
+<Project>
+    <PropertyGroup>
+        <_WPILibSdlWindowsArchiveName>SDL3.lib</_WPILibSdlWindowsArchiveName>
+        <_WPILibSdlUnixArchiveName>libSDL3.a</_WPILibSdlUnixArchiveName>
+        <_WPILibSdlArchiveName Condition=" '$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == 'win-arm64' ">$(_WPILibSdlWindowsArchiveName)</_WPILibSdlArchiveName>
+        <_WPILibSdlArchiveName Condition=" '$(RuntimeIdentifier)' == 'linux-x64' Or '$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64' ">$(_WPILibSdlUnixArchiveName)</_WPILibSdlArchiveName>
+        <WPILibSdlStaticRuntimePath>$(MSBuildThisFileDirectory)../static/$(RuntimeIdentifier)/$(_WPILibSdlArchiveName)</WPILibSdlStaticRuntimePath>
+    </PropertyGroup>
+</Project>

@@ -10,3 +10,4 @@ nuget/WPILib.DriverStation.SDL.runtime/runtimes
 **/.DS_Store
 bin/
 obj/
+*.sln

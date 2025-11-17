@@ -5,13 +5,15 @@ task prepareLibSdlDirectories {
         mkdir file("$build_dir/releasestatic")
         mkdir file("$build_dir/releaseshared")
         mkdir file("$build_dir/releasesharedcrt")
+        mkdir file("$build_dir/releasestaticcrt")
         mkdir file("$build_dir/debugstatic")
         mkdir file("$build_dir/debugshared")
         mkdir file("$build_dir/debugsharedcrt")
+        mkdir file("$build_dir/debugstaticcrt")
     }
 }
 
-def types = ['DebugStatic', 'DebugShared', 'DebugSharedCrt', 'ReleaseStatic', 'ReleaseShared', 'ReleaseSharedCrt']
+def types = ['DebugStatic', 'DebugShared', 'DebugSharedCrt', 'DebugStaticCrt', 'ReleaseStatic', 'ReleaseShared', 'ReleaseSharedCrt', 'ReleaseStaticCrt']
 types.each { type ->
     project.tasks.create("configureLibSdl${type}", Exec) {
         dependsOn prepareLibSdlDirectories
