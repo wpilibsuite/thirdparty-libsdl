@@ -101,5 +101,5 @@ project.tasks.create('publishNugetPackage', Exec) {
     args '--source'
     args 'https://wpilib.jfrog.io/artifactory/api/nuget/wpilib-nuget-development-local'
     args '--api-key'
-    args System.getenv('ARTIFACTORY_PUBLISH_PASSWORD')
+    args (System.getenv('ARTIFACTORY_PUBLISH_USERNAME') + ':' + System.getenv('ARTIFACTORY_PUBLISH_PASSWORD'))
 }
