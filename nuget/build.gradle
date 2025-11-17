@@ -99,7 +99,7 @@ project.tasks.create('publishNugetPackage', Exec) {
     args 'push'
     args "${buildDir}/nugetpackages/WPILib.DriverStation.SDL.runtime.${pubVersion}.nupkg"
     args '--source'
-    args 'https://wpilib.jfrog.io/artifactory/api/nuget/wpilib-nuget-development-local'
+    args "https://wpilib.jfrog.io/artifactory/api/nuget/wpilib-nuget-development-local/WPILib.DriverStation.SDL.runtime/${pubVersion}"
     args '--api-key'
     args (System.getenv('ARTIFACTORY_PUBLISH_USERNAME') + ':' + System.getenv('ARTIFACTORY_PUBLISH_PASSWORD'))
 }
