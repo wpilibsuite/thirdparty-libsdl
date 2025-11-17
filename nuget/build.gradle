@@ -130,7 +130,7 @@ project.tasks.create('generateStaticNugetPackage', Exec) {
 
     executable 'dotnet'
     args 'pack'
-    args 'WPILib.DriverStation.SDL.runtime/WPILib.DriverStation.SDL.staticruntime.csproj'
+    args 'WPILib.DriverStation.SDL.staticruntime/WPILib.DriverStation.SDL.staticruntime.csproj'
     args '-o', file("${buildDir}/nugetpackages")
     args "/p:Version=${pubVersion}"
 }
