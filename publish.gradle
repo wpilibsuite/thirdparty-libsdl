@@ -81,7 +81,7 @@ task cppSourcesZip(type: Zip) {
   project.addTaskToCopyAllOutputs(it)
 }
 
-def types = ['DebugStatic', 'DebugShared', 'DebugSharedCrt', 'DebugStaticCrt', 'ReleaseStatic', 'ReleaseShared', 'ReleaseSharedCrt', 'ReleaseStaticCrt']
+def types = ['DebugStatic', 'DebugShared', 'ReleaseStatic', 'ReleaseShared', 'ReleaseSharedCrt', 'ReleaseStaticCrt']
 types.each { type ->
     project.tasks.create("cpp${type}LibrariesZip", Zip) {
         dependsOn "libSDL${type}"
@@ -130,8 +130,8 @@ model {
         artifact cppReleaseStaticLibrariesZip
         artifact cppDebugSharedLibrariesZip
         artifact cppReleaseSharedLibrariesZip
-        artifact cppDebugSharedCrtLibrariesZip
         artifact cppReleaseSharedCrtLibrariesZip
+        artifact cppReleaseStaticCrtLibrariesZip
 
         artifactId = base_artifact_id
         groupId = artifact_group_id
