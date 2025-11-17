@@ -1,0 +1,106 @@
+import org.gradle.internal.os.OperatingSystem
+
+plugins {
+  id "maven-publish"
+  id "de.undercouch.download" version "5.4.0"
+}
+
+// Project Version
+ext.pub_version = "3.2.26-1"
+
+static def get_platform() {
+  def platform
+  def os_name = System.getProperty("os.name")
+  def os_arch = System.getProperty("os.arch")
+
+  if (os_arch == 'amd64') {
+    os_arch = 'x86_64'
+  } else if (os_arch == 'i386') {
+    os_arch = 'x86'
+  } else if (os_arch == 'aarch64' || os_arch == 'arm64') {
+    os_arch = 'arm64'
+  }
+
+  if (OperatingSystem.current().isWindows()) {
+    platform = "windows-${os_arch}"
+  } else if (OperatingSystem.current().isLinux()) {
+    platform = "linux-${os_arch}"
+  } else if (OperatingSystem.current().isMacOsX()) {
+    platform = "osx-universal"
+  } else {
+    platform = "${os_name}-${os_arch}"
+  }
+
+  return platform
+}
+
+static def get_platform_path(platform) {
+  if (platform == "linux-athena") {
+    return "linux/athena"
+  } else if (platform == "linux-arm32") {
+    return "linux/arm32"
+  } else if (platform == "linux-arm64") {
+    return "linux/arm64"
+  } else if (platform == "linux-x86") {
+    return "linux/x86"
+  } else if (platform == "linux-x86_64") {
+    return "linux/x86-64"
+  } else if (platform == "osx-universal") {
+    return "osx/universal"
+  } else if (platform == "windows-x86") {
+    return "windows/x86"
+  } else if (platform == "windows-x86_64") {
+    return "windows/x86-64"
+  } else if (platform == "windows-arm64") {
+    return "windows/arm64"
+  } else {
+    return ""
+  }
+}
+
+ext.platform = get_platform()
+if (project.hasProperty('forcecrossbuild')) {
+  ext.platform = forcecrossbuild
+}
+ext.platform_path = get_platform_path(ext.platform)
+ext.platform_classifier = ext.platform.replaceFirst('-', '').replace('_', '-')
+
+// Get the number of processors available to build.
+ext.processors = Runtime.runtime.availableProcessors()
+
+ext.sdl_dir = file("SDL")
+ext.sdl_build_dir = file("build/$platform_path/SDL")
+ext.sdl_install = file("build/$platform_path/install-SDL")
+
+task clean {
+  doLast {
+    rootDir.eachDir {dir ->
+      if (dir.name.startsWith("build") || dir.name.startsWith("install"))
+        delete dir
+    }
+  }
+}
+
+apply from: "libsdl.gradle"
+
+// Outputs for publishing
+def outputs_dir = file("$buildDir/allOutputs")
+task copyAllOutputs(type: Copy) {
+  destinationDir = outputs_dir
+}
+
+ext.addTaskToCopyAllOutputs = { task ->
+  copyAllOutputs.dependsOn task
+  copyAllOutputs.inputs.file task.archiveFile
+  copyAllOutputs.from task.archiveFile
+}
+
+task build {
+  dependsOn copyAllOutputs
+}
+
+apply from: "publish.gradle"
+
+wrapper {
+    gradleVersion = '9.2.0'
+}

@@ -1,0 +1,78 @@
+task prepareLibSdlDirectories {
+    mustRunAfter clean
+    def build_dir = project.sdl_build_dir
+    doLast {
+        mkdir file("$build_dir/releasestatic")
+        mkdir file("$build_dir/releaseshared")
+        mkdir file("$build_dir/releasesharedcrt")
+        mkdir file("$build_dir/debugstatic")
+        mkdir file("$build_dir/debugshared")
+        mkdir file("$build_dir/debugsharedcrt")
+    }
+}
+
+def types = ['DebugStatic', 'DebugShared', 'DebugSharedCrt', 'ReleaseStatic', 'ReleaseShared', 'ReleaseSharedCrt']
+types.each { type ->
+    project.tasks.create("configureLibSdl${type}", Exec) {
+        dependsOn prepareLibSdlDirectories
+
+        def buildDir = "$project.sdl_build_dir/${type.toLowerCase()}"
+        workingDir buildDir
+
+        executable 'cmake'
+        args "$sdl_dir", "-G", "Ninja"
+
+        if (project.platform == "osx-universal") {
+            args "-DCMAKE_OSX_ARCHITECTURES=x86_64;arm64", "-DCMAKE_OSX_DEPLOYMENT_TARGET=\"13.3\""
+            environment "ARCHFLAGS", "-arch arm64 -arch x86_64"
+        } else if (project.platform == "linux-arm64") {
+            if (project.hasProperty('forcecrossbuild')) {
+                args "-DCMAKE_TOOLCHAIN_FILE=$rootDir/cmake/aarch64-bullseye-gnu.toolchain.cmake"
+            }
+        } else if (project.platform == "linux-systemcore") {
+            args "-DCMAKE_TOOLCHAIN_FILE=$rootDir/cmake/aarch64-bullseye-gnu.toolchain.cmake"
+        }
+
+        def crtType = ""
+
+        if (type.toLowerCase().contains("debug")) {
+            args "-DCMAKE_BUILD_TYPE=Debug"
+            crtType = "Debug"
+        } else {
+            args "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+        }
+
+        if (type.toLowerCase().contains("shared")) {
+            args "-DSDL_SHARED=ON"
+        } else {
+            args "-DSDL_STATIC=ON"
+        }
+
+        args "-DCMAKE_PLATFORM_NO_VERSIONED_SONAME=ON", "-DSDL_AUDIO_DEFAULT=OFF", "-DSDL_GPU_DEFAULT=OFF", "-DSDL_RENDER_DEFAULT=OFF", "-DSDL_CAMERA_DEFAULT=OFF", "-DSDL_POWER_DEFAULT=OFF", "-DSDL_SENSOR_DEFAULT=OFF", "-DSDL_DIALOG_DEFAULT=OFF"
+
+        if (type.toLowerCase().contains("crt")) {
+            args "-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded${crtType}"
+        } else {
+            args "-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded${crtType}DLL"
+        }
+    }
+}
+
+types.each { type ->
+    project.tasks.create("buildLibSdl${type}", Exec) {
+        dependsOn "configureLibSdl${type}"
+
+        def buildDir = "$project.sdl_build_dir/${type.toLowerCase()}"
+        workingDir buildDir
+
+        executable 'cmake'
+        args "--build", ".", "--parallel", "${project.processors}"
+    }
+}
+
+// Create a "mega-task" that builds everything.
+types.each { type ->
+  project.tasks.create("libSDL$type") {
+    dependsOn "buildLibSdl${type}"
+  }
+}

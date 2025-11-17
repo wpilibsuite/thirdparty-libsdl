@@ -1,0 +1,128 @@
+// Define directories and files used for outputs.
+def outputs_dir = file("$buildDir/outputs")
+def libsdl_license_file = file("SDL/LICENSE.txt")
+
+// Define names for publishing.
+def base_artifact_id = "libsdl"
+def artifact_group_id = "org.wpilib.thirdparty.frc2027"
+
+def zip_base_name = "_GROUP_org_wpilib_thirdparty_frc2027_ID_libsdl_CLS"
+
+// Generate version number.
+def version_file = file("$outputs_dir/version.txt")
+task outputVersions() {
+  outputs.files(version_file)
+
+  doFirst {
+    buildDir.mkdir()
+    outputs_dir.mkdir()
+  }
+
+  def pub_version = project.pub_version
+
+  doLast {
+    version_file.write pub_version
+  }
+}
+
+build.dependsOn outputVersions
+copyAllOutputs.dependsOn outputVersions
+copyAllOutputs.inputs.file version_file
+copyAllOutputs.from version_file
+
+// Create archive of headers.
+task cppHeadersZip(type: Zip) {
+
+  destinationDirectory = outputs_dir
+  archiveBaseName = zip_base_name
+  archiveClassifier = "headers"
+
+  // Copy license files.
+  from(libsdl_license_file) {
+    into "/"
+    rename { _ -> "LIBSDL_LICENSE" }
+  }
+
+  // Copy headers.
+  from("${project.sdl_dir}/include/SDL3") {
+    into "/SDL3"
+    include "**/*.h", "**/*.hpp"
+  }
+
+  includeEmptyDirs = false
+
+  // Add task to copy all outputs.
+  project.addTaskToCopyAllOutputs(it)
+}
+
+// Create archive of sources.
+
+task cppSourcesZip(type: Zip) {
+
+  destinationDirectory = outputs_dir
+  archiveBaseName = zip_base_name
+  archiveClassifier = "sources"
+
+  // Copy license files.
+  from(libsdl_license_file) {
+    into "/"
+    rename { _ -> "LIBSDL_LICENSE" }
+  }
+
+  // Copy headers.
+  from("${project.sdl_dir}/src") {
+    into "/"
+    include "**/*.c"
+  }
+
+  includeEmptyDirs = false
+
+  // Add task to copy all outputs.
+  project.addTaskToCopyAllOutputs(it)
+}
+
+def types = ['DebugStatic', 'DebugShared', 'DebugSharedCrt', 'ReleaseStatic', 'ReleaseShared', 'ReleaseSharedCrt']
+types.each { type ->
+    project.tasks.create("cpp${type}LibrariesZip", Zip) {
+        dependsOn "libSDL${type}"
+
+        destinationDirectory = outputs_dir
+        archiveBaseName = zip_base_name
+
+        def debugClassifer = type.toLowerCase().contains("debug") ? "debug" : ""
+        def crtClassifier = type.toLowerCase().contains("crt") ? "crt" : ""
+        def sharedClassifier = type.toLowerCase().contains("shared") ? "shared" : "static"
+
+        archiveClassifier = "${project.platform_classifier}${sharedClassifier}${debugClassifer}${crtClassifier}"
+
+        // Copy license files.
+        from(libsdl_license_file) {
+            into "/"
+            rename { _ -> "LIBSDL_LICENSE" }
+        }
+
+        // Add task to copy all outputs.
+        project.addTaskToCopyAllOutputs(it)
+    }
+}
+
+model {
+  publishing {
+    publications {
+      libsdl(MavenPublication) {
+        artifact cppHeadersZip
+        artifact cppSourcesZip
+        artifact cppDebugStaticLibrariesZip
+        artifact cppReleaseStaticLibrariesZip
+        artifact cppDebugSharedLibrariesZip
+        artifact cppReleaseSharedLibrariesZip
+        artifact cppDebugSharedCrtLibrariesZip
+        artifact cppReleaseSharedCrtLibrariesZip
+
+        artifactId = base_artifact_id
+        groupId = artifact_group_id
+        version = project.pub_version
+      }
+    }
+  }
+}
