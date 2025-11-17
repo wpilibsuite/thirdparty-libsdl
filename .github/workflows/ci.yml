@@ -126,7 +126,7 @@ jobs:
         run: rsync -a --delete combiner/products/build/allOutputs/*/* combiner/products/build/allOutputs/
       - uses: actions/setup-java@v4
         with:
-          java-version: 21
+          java-version: 17
           distribution: 'temurin'
       - name: Combine
         if: |
