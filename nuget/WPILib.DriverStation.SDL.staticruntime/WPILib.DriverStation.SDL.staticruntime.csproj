@@ -15,8 +15,8 @@
 
   <ItemGroup>
       <None Include="wpilib-128.png" Pack="true" PackagePath="\"/>
-      <None Include="wpilib-WPILib.DriverStation.SDL.staticruntime.props" Pack="true" PackagePath="build"/>
-      <None Include="wpilib-WPILib.DriverStation.SDL.staticruntime.targets" Pack="true" PackagePath="build"/>
+      <None Include="WPILib.DriverStation.SDL.staticruntime.props" Pack="true" PackagePath="build"/>
+      <None Include="WPILib.DriverStation.SDL.staticruntime.targets" Pack="true" PackagePath="build"/>
   </ItemGroup>
 
   <ItemGroup>
