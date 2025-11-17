@@ -1,0 +1,105 @@
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+plugins {
+    id "com.jfrog.artifactory" version "5.2.5" apply false
+}
+
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.artifactory'
+
+publishing {
+  repositories {
+    maven {
+      url = "${System.getProperty('user.home')}/releases/maven/development"
+    }
+  }
+}
+
+if (System.getenv()['RUN_AZURE_ARTIFACTORY_RELEASE'] != null) {
+  artifactory {
+    contextUrl = 'https://frcmaven.wpi.edu/artifactory' // base artifactory url
+    publish {
+      repository {
+        repoKey = 'thirdparty-mvn-release'
+        username = System.getenv()['ARTIFACTORY_PUBLISH_USERNAME']
+        password = System.getenv()['ARTIFACTORY_PUBLISH_PASSWORD']
+      }
+    }
+    if (project.hasProperty('buildName')) {
+      clientConfig.info.setBuildName(project.getProperty('buildName'))
+    } else {
+      clientConfig.info.setBuildName('thirdparty')
+    }
+  }
+  publish.dependsOn artifactoryPublish
+}
+
+def products = file('products')
+
+def pubVersion = file('products/version.txt').text.trim().replaceAll('-','.')
+
+def foundArtifacts = []
+
+products.eachFile {
+    if (it.name.contains('sharedcrt')) {
+        foundArtifacts << it
+    }
+}
+
+task unzipAll() {
+
+}
+
+foundArtifacts.each { artifact ->
+    def unzipTask = project.tasks.create("unzip${artifact.name.capitalize()}", Copy) {
+        from zipTree(artifact)
+        into file("${buildDir}/unzipped")
+    }
+    unzipAll.dependsOn unzipTask
+}
+
+def artifactMap = [
+    "${buildDir}/unzipped/windows/x86-64/shared/SDL3.dll": "win-x64/native",
+    "${buildDir}/unzipped/windows/arm64/shared/SDL3.dll": "win-arm64/native",
+    "${buildDir}/unzipped/osx/universal/shared/libSDL3.dylib": "osx-x64/native",
+    "${buildDir}/unzipped/linux/x86-64/shared/libSDL3.so": "linux-x64/native",
+]
+
+task copyArtifacts(type: Copy) {
+    dependsOn unzipAll
+    destinationDir = file("${projectDir}/WPILib.DriverStation.SDL.runtime/runtimes")
+    artifactMap.each { src, dest ->
+        if (src.contains("libSDL3.dylib")) {
+            from (src) {
+                into "osx-arm64/native"
+            }
+        }
+        from (src) {
+            into dest
+        }
+    }
+}
+
+project.tasks.create('generateNugetPackage', Exec) {
+    dependsOn copyArtifacts
+
+    executable 'dotnet'
+    args 'pack'
+    args 'WPILib.DriverStation.SDL.runtime/WPILib.DriverStation.SDL.runtime.csproj'
+    args '-o', file("${buildDir}/nugetpackages")
+    args "/p:Version=${pubVersion}"
+}
+
+project.tasks.create('publishNugetPackage', Exec) {
+    dependsOn generateNugetPackage
+
+    executable 'dotnet'
+    args 'nuget'
+    args 'push'
+    args "${buildDir}/nugetpackages/WPILib.DriverStation.SDL.runtime.${pubVersion}.nupkg"
+    args '--source'
+    args 'https://wpilib.jfrog.io/artifactory/api/nuget/wpilib-nuget-development-local'
+    args '--api-key'
+    args (System.getenv('ARTIFACTORY_PUBLISH_USERNAME') + ':' + System.getenv('ARTIFACTORY_PUBLISH_PASSWORD'))
+}

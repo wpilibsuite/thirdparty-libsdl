@@ -111,6 +111,40 @@ jobs:
           name: macOS
           path: build/allOutputs
 
+  nuget:
+    name: NuGet Package
+    needs: [ build-linux, build-windows, build-macos ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: nuget/products
+      - name: Flatten Artifacts
+        run: rsync -a --delete nuget/products/*/* nuget/products/
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'temurin'
+      - name: Build NuGet Package
+        if: |
+          !startsWith(github.ref, 'refs/tags/v')
+        run: ../gradlew generateNugetPackage
+        working-directory: nuget
+      - name: Publish NuGet Package (Release)
+        if: |
+          github.repository_owner == 'wpilibsuite' &&
+          startsWith(github.ref, 'refs/tags/v')
+        run: ../gradlew publishNugetPackage
+        working-directory: nuget
+        env:
+          ARTIFACTORY_PUBLISH_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          ARTIFACTORY_PUBLISH_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NuGet
+          path: nuget/build/nugetpackages
+
   combine:
     name: Combine
     needs: [ build-linux, build-windows, build-macos ]

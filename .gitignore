@@ -5,3 +5,8 @@ install-*
 .settings
 .vscode
 build
+nuget/products
+nuget/WPILib.DriverStation.SDL.runtime/runtimes
+**/.DS_Store
+bin/
+obj/
