@@ -133,7 +133,8 @@ jobs:
         working-directory: nuget
       - name: Publish NuGet Package (Release)
         if: |
-          !startsWith(github.ref, 'refs/tags/v')
+          github.repository_owner == 'wpilibsuite' &&
+          startsWith(github.ref, 'refs/tags/v')
         run: ../gradlew publishNugetPackage
         working-directory: nuget
         env:

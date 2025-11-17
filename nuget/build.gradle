@@ -97,7 +97,7 @@ project.tasks.create('publishNugetPackage', Exec) {
     executable 'dotnet'
     args 'nuget'
     args 'push'
-    args "${buildDir}/nugetpackages/FRC.WPILib.DriverStation.SDL.runtime.${pubVersion}.nupkg"
+    args "${buildDir}/nugetpackages/WPILib.DriverStation.SDL.runtime.${pubVersion}.nupkg"
     args '--source'
     args 'https://wpilib.jfrog.io/artifactory/api/nuget/wpilib-nuget-development-local'
     args '--api-key'
