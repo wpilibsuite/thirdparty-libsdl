@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>WPILib.DriverStation.SDL.runtime</AssemblyName>
+    <AssemblyName>WPILib.DriverStation.SDL.staticruntime</AssemblyName>
     <TargetFramework>netstandard2.0</TargetFramework>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     <IncludeBuildOutput>false</IncludeBuildOutput>
@@ -15,8 +15,8 @@
 
   <ItemGroup>
       <None Include="wpilib-128.png" Pack="true" PackagePath="\"/>
-      <None Include="wpilib-WPILib.DriverStation.SDL.runtime.props" Pack="true" PackagePath="build"/>
-      <None Include="wpilib-WPILib.DriverStation.SDL.runtime.targets" Pack="true" PackagePath="build"/>
+      <None Include="wpilib-WPILib.DriverStation.SDL.staticruntime.props" Pack="true" PackagePath="build"/>
+      <None Include="wpilib-WPILib.DriverStation.SDL.staticruntime.targets" Pack="true" PackagePath="build"/>
   </ItemGroup>
 
   <ItemGroup>
