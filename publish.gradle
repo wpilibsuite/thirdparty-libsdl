@@ -110,7 +110,7 @@ types.each { type ->
             include "**/libSDL3.dylib"
             include "**/libSDL3.so"
             include "**/SDL3.dll"
-            include "**/libSDL3-static.a"
+            include "**/libSDL3.a"
             include "**/SDL3-static.lib"
             include "**/SDL3.lib"
             include "**/SDL3.pdb"
