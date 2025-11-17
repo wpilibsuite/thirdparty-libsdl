@@ -63,6 +63,14 @@ foundArtifacts.each { artifact ->
     unzipAll.dependsOn unzipTask
 }
 
+foundStaticArtifacts.each { artifact ->
+    def unzipTask = project.tasks.create("unzip${artifact.name.capitalize()}", Copy) {
+        from zipTree(artifact)
+        into file("${buildDir}/unzipped")
+    }
+    unzipAll.dependsOn unzipTask
+}
+
 def artifactMap = [
     "${buildDir}/unzipped/windows/x86-64/shared/SDL3.dll": "runtimes/win-x64/native",
     "${buildDir}/unzipped/windows/arm64/shared/SDL3.dll": "runtimes/win-arm64/native",
