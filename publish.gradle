@@ -95,10 +95,24 @@ types.each { type ->
 
         archiveClassifier = "${project.platform_classifier}${sharedClassifier}${debugClassifer}${crtClassifier}"
 
+        def sharedFolder = type.toLowerCase().contains("shared") ? "shared" : "static"
+
         // Copy license files.
         from(libsdl_license_file) {
             into "/"
             rename { _ -> "LIBSDL_LICENSE" }
+        }
+
+        def lib_dir = file("${project.sdl_build_dir}/${type.toLowerCase()}/lib")
+        // Copy libraries.
+        from(lib_dir) {
+            into "${project.platform_path}/${sharedFolder}"
+            include "**/libSDL3.dylib"
+            include "**/libSDL3.so"
+            include "**/SDL3.dll"
+            include "**/libSDL3.a"
+            include "**/SDL3.lib"
+            include "**/SDL3.pdb"
         }
 
         // Add task to copy all outputs.

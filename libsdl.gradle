@@ -55,6 +55,10 @@ types.each { type ->
         } else {
             args "-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded${crtType}DLL"
         }
+
+        args "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${buildDir}/lib"
+        args "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${buildDir}/lib"
+        args "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${buildDir}/lib"
     }
 }
 
