@@ -44,7 +44,9 @@ types.each { type ->
 
         if (type.toLowerCase().contains("shared")) {
             args "-DSDL_SHARED=ON"
+            args "-DSDL_STATIC=OFF"
         } else {
+            args "-DSDL_SHARED=OFF"
             args "-DSDL_STATIC=ON"
         }
 
