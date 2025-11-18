@@ -114,6 +114,12 @@ types.each { type ->
             include "**/SDL3-static.lib"
             include "**/SDL3.lib"
             include "**/SDL3.pdb"
+
+        }
+
+      def build_dir = file("${project.sdl_build_dir}/${type.toLowerCase()}")
+        from (build_dir) {
+            into "${project.platform_path}/${sharedFolder}"
             include "**/SDL3-static.pdb"
         }
 
