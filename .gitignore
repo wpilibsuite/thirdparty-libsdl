@@ -7,6 +7,7 @@ install-*
 build
 nuget/products
 nuget/WPILib.DriverStation.SDL.runtime/runtimes
+nuget/WPILib.DriverStation.SDL.staticruntime/runtimes
 **/.DS_Store
 bin/
 obj/

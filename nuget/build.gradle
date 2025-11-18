@@ -81,6 +81,8 @@ def artifactMap = [
 def staticArtifactMap = [
     "${buildDir}/unzipped/static/windows/x86-64/static/SDL3-static.lib": "runtimes/win-x64",
     "${buildDir}/unzipped/static/windows/arm64/static/SDL3-static.lib": "runtimes/win-arm64",
+    "${buildDir}/unzipped/static/windows/x86-64/static/SDL3-static.pdb": "runtimes/win-x64",
+    "${buildDir}/unzipped/static/windows/arm64/static/SDL3-static.pdb": "runtimes/win-arm64",
     "${buildDir}/unzipped/static/osx/universal/static/libSDL3.a": "runtimes/osx-arm64",
     "${buildDir}/unzipped/static/linux/x86-64/static/libSDL3.a": "runtimes/linux-x64",
 ]
