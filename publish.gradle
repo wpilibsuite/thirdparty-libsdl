@@ -114,6 +114,7 @@ types.each { type ->
             include "**/SDL3-static.lib"
             include "**/SDL3.lib"
             include "**/SDL3.pdb"
+            include "**/SDL3-static.pdb"
         }
 
         // Add task to copy all outputs.
