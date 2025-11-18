@@ -1,10 +1,7 @@
 <Project>
     <PropertyGroup>
-        <_WPILibSdlIsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</_WPILibSdlIsWindows>
-        <_WPILibSdlWindowsArchiveName>SDL3-static.lib</_WPILibSdlWindowsArchiveName>
-        <_WPILibSdlUnixArchiveName>libSDL3.a</_WPILibSdlUnixArchiveName>
-        <WPILibSdlArchiveName Condition="'$(_WPILibSdlIsWindows)'=='true'">$(_WPILibSdlWindowsArchiveName)</WPILibSdlArchiveName>
-        <WPILibSdlArchiveName Condition="'$(_WPILibSdlIsWindows)'!='true'">$(_WPILibSdlUnixArchiveName)</WPILibSdlArchiveName>
+        <WPILibSdlWindowsArchiveName>SDL3-static.lib</WPILibSdlWindowsArchiveName>
+        <WPILibSdlUnixArchiveName>libSDL3.a</WPILibSdlUnixArchiveName>
         <WPILibSdlStaticRuntimePath>$(MSBuildThisFileDirectory)../static</WPILibSdlStaticRuntimePath>
     </PropertyGroup>
 </Project>
