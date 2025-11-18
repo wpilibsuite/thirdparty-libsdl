@@ -61,6 +61,7 @@ types.each { type ->
         args "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${buildDir}/lib"
         args "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${buildDir}/lib"
         args "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${buildDir}/lib"
+        args "-DCMAKE_PDB_OUTPUT_DIRECTORY=${buildDir}/lib"
     }
 }
 
