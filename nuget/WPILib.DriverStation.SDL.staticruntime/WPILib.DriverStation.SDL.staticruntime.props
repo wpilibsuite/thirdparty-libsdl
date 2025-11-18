@@ -1,7 +1,0 @@
-<Project>
-    <PropertyGroup>
-        <WPILibSdlWindowsArchiveName>SDL3-static.lib</WPILibSdlWindowsArchiveName>
-        <WPILibSdlUnixArchiveName>libSDL3.a</WPILibSdlUnixArchiveName>
-        <WPILibSdlStaticRuntimePath>$(MSBuildThisFileDirectory)../static</WPILibSdlStaticRuntimePath>
-    </PropertyGroup>
-</Project>
