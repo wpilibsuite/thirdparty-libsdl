@@ -142,8 +142,8 @@ project.tasks.create('generateNugetPackages') {
     dependsOn generateStaticNugetPackage
 }
 
-project.tasks.create('publishNugetPackages', Exec) {
-    dependsOn generateNugetPackages
+project.tasks.create('publishNugetPackage', Exec) {
+    dependsOn generateNugetPackage
 
     executable 'dotnet'
     args 'nuget'
@@ -153,6 +153,10 @@ project.tasks.create('publishNugetPackages', Exec) {
     args "https://wpilib.jfrog.io/artifactory/api/nuget/wpilib-nuget-development-local/WPILib.DriverStation.SDL.runtime/${pubVersion}"
     args '--api-key'
     args (System.getenv('ARTIFACTORY_PUBLISH_USERNAME') + ':' + System.getenv('ARTIFACTORY_PUBLISH_PASSWORD'))
+}
+
+project.tasks.create('publishStaticNugetPackage', Exec) {
+    dependsOn generateStaticNugetPackage
 
     executable 'dotnet'
     args 'nuget'
