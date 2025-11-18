@@ -81,7 +81,7 @@ task cppSourcesZip(type: Zip) {
   project.addTaskToCopyAllOutputs(it)
 }
 
-def types = ['DebugStatic', 'DebugShared', 'DebugSharedCrt', 'ReleaseStatic', 'ReleaseShared', 'ReleaseSharedCrt']
+def types = ['DebugStatic', 'DebugShared', 'ReleaseStatic', 'ReleaseShared', 'ReleaseSharedCrt', 'ReleaseStaticCrt']
 types.each { type ->
     project.tasks.create("cpp${type}LibrariesZip", Zip) {
         dependsOn "libSDL${type}"
@@ -111,8 +111,15 @@ types.each { type ->
             include "**/libSDL3.so"
             include "**/SDL3.dll"
             include "**/libSDL3.a"
+            include "**/SDL3-static.lib"
             include "**/SDL3.lib"
             include "**/SDL3.pdb"
+            include "**/SDL3-static.pdb"
+        }
+
+        def pdb_file = file("${project.sdl_build_dir}/${type.toLowerCase()}/CMakeFiles/SDL3-static.dir/SDL3-static.pdb")
+        from(pdb_file) {
+            into "${project.platform_path}/${sharedFolder}"
         }
 
         // Add task to copy all outputs.
@@ -130,8 +137,8 @@ model {
         artifact cppReleaseStaticLibrariesZip
         artifact cppDebugSharedLibrariesZip
         artifact cppReleaseSharedLibrariesZip
-        artifact cppDebugSharedCrtLibrariesZip
         artifact cppReleaseSharedCrtLibrariesZip
+        artifact cppReleaseStaticCrtLibrariesZip
 
         artifactId = base_artifact_id
         groupId = artifact_group_id

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>WPILib.DriverStation.SDL.staticruntime</AssemblyName>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <Authors>WPILibSuite</Authors>
+    <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/wpilibsuite/thirdparty-libsdl</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/wpilibsuite/thirdparty-libsdl</RepositoryUrl>
+    <RepositoryCommit>123456</RepositoryCommit>
+    <PackageIcon>wpilib-128.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+      <None Include="wpilib-128.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+  <ItemGroup>
+      <None Include="runtimes\win-x64\SDL3-static.lib" Pack="true" PackagePath="static\win-x64\" />
+      <None Include="runtimes\win-arm64\SDL3-static.lib" Pack="true" PackagePath="static\win-arm64\" />
+      <None Include="runtimes\win-x64\SDL3-static.pdb" Pack="true" PackagePath="static\win-x64\" />
+      <None Include="runtimes\win-arm64\SDL3-static.pdb" Pack="true" PackagePath="static\win-arm64\" />
+      <None Include="runtimes\linux-x64\libSDL3.a" Pack="true" PackagePath="static\linux-x64\" />
+      <None Include="runtimes\osx-x64\libSDL3.a" Pack="true" PackagePath="static\osx-x64\" />
+      <None Include="runtimes\osx-arm64\libSDL3.a" Pack="true" PackagePath="static\osx-arm64\" />
+  </ItemGroup>
+
+</Project>

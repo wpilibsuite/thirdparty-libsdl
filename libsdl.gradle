@@ -5,13 +5,13 @@ task prepareLibSdlDirectories {
         mkdir file("$build_dir/releasestatic")
         mkdir file("$build_dir/releaseshared")
         mkdir file("$build_dir/releasesharedcrt")
+        mkdir file("$build_dir/releasestaticcrt")
         mkdir file("$build_dir/debugstatic")
         mkdir file("$build_dir/debugshared")
-        mkdir file("$build_dir/debugsharedcrt")
     }
 }
 
-def types = ['DebugStatic', 'DebugShared', 'DebugSharedCrt', 'ReleaseStatic', 'ReleaseShared', 'ReleaseSharedCrt']
+def types = ['DebugStatic', 'DebugShared', 'ReleaseStatic', 'ReleaseShared', 'ReleaseSharedCrt', 'ReleaseStaticCrt']
 types.each { type ->
     project.tasks.create("configureLibSdl${type}", Exec) {
         dependsOn prepareLibSdlDirectories
@@ -44,7 +44,9 @@ types.each { type ->
 
         if (type.toLowerCase().contains("shared")) {
             args "-DSDL_SHARED=ON"
+            args "-DSDL_STATIC=OFF"
         } else {
+            args "-DSDL_SHARED=OFF"
             args "-DSDL_STATIC=ON"
         }
 
