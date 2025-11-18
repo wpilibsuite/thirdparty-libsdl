@@ -1,9 +1,10 @@
 <Project>
     <PropertyGroup>
+        <_WPILibSdlIsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</_WPILibSdlIsWindows>
         <_WPILibSdlWindowsArchiveName>SDL3-static.lib</_WPILibSdlWindowsArchiveName>
         <_WPILibSdlUnixArchiveName>libSDL3.a</_WPILibSdlUnixArchiveName>
-        <_WPILibSdlArchiveName Condition=" '$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == 'win-arm64' ">$(_WPILibSdlWindowsArchiveName)</_WPILibSdlArchiveName>
-        <_WPILibSdlArchiveName Condition=" '$(RuntimeIdentifier)' == 'linux-x64' Or '$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64' ">$(_WPILibSdlUnixArchiveName)</_WPILibSdlArchiveName>
-        <WPILibSdlStaticRuntimePath>$(MSBuildThisFileDirectory)../static/$(RuntimeIdentifier)/$(_WPILibSdlArchiveName)</WPILibSdlStaticRuntimePath>
+        <WPILibSdlArchiveName Condition="'$(IsWindows)'=='true'">$(_WPILibSdlWindowsArchiveName)</WPILibSdlArchiveName>
+        <WPILibSdlArchiveName Condition="'$(IsWindows)'!='true'">$(_WPILibSdlUnixArchiveName)</WPILibSdlArchiveName>
+        <WPILibSdlStaticRuntimePath>$(MSBuildThisFileDirectory)../static</WPILibSdlStaticRuntimePath>
     </PropertyGroup>
 </Project>
