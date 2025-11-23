@@ -26,7 +26,6 @@ jobs:
   build-linux-arm64:
     name: "Build - Linux Arm64"
     runs-on: ubuntu-24.04-arm
-    container: wpilib/ubuntu-base:24.04
     steps:
       - uses: actions/checkout@v4
         with:
