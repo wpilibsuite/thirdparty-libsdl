@@ -18,14 +18,14 @@
   </ItemGroup>
 
   <ItemGroup>
-      <None Include="runtimes\win-x64\SDL3-static.lib" Pack="true" PackagePath="static\win-x64\" />
-      <None Include="runtimes\win-arm64\SDL3-static.lib" Pack="true" PackagePath="static\win-arm64\" />
-      <None Include="runtimes\win-x64\SDL3-static.pdb" Pack="true" PackagePath="static\win-x64\" />
-      <None Include="runtimes\win-arm64\SDL3-static.pdb" Pack="true" PackagePath="static\win-arm64\" />
-      <None Include="runtimes\linux-x64\libSDL3.a" Pack="true" PackagePath="static\linux-x64\" />
-      <None Include="runtimes\linux-arm64\libSDL3.a" Pack="true" PackagePath="static\linux-arm64\" />
-      <None Include="runtimes\osx-x64\libSDL3.a" Pack="true" PackagePath="static\osx-x64\" />
-      <None Include="runtimes\osx-arm64\libSDL3.a" Pack="true" PackagePath="static\osx-arm64\" />
+      <None Include="runtimes\win-x64\SDL3-static.lib" Pack="true" PackagePath="static\win-x64" />
+      <None Include="runtimes\win-arm64\SDL3-static.lib" Pack="true" PackagePath="static\win-arm64" />
+      <None Include="runtimes\win-x64\SDL3-static.pdb" Pack="true" PackagePath="static\win-x64" />
+      <None Include="runtimes\win-arm64\SDL3-static.pdb" Pack="true" PackagePath="static\win-arm64" />
+      <None Include="runtimes\linux-x64\libSDL3.a" Pack="true" PackagePath="static\linux-x64" />
+      <None Include="runtimes\linux-arm64\libSDL3.a" Pack="true" PackagePath="static\linux-arm64" />
+      <None Include="runtimes\osx-x64\libSDL3.a" Pack="true" PackagePath="static\osx-x64" />
+      <None Include="runtimes\osx-arm64\libSDL3.a" Pack="true" PackagePath="static\osx-arm64" />
   </ItemGroup>
 
 </Project>
