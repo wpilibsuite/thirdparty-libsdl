@@ -13,7 +13,7 @@ jobs:
           submodules: true
 
       - name: Setup Dependencies
-        run: sudo apt-get update && sudo apt-get install -y ninja-build libusb-1.0-0-dev libudev-dev
+        run: sudo apt-get update && sudo apt-get install -y ninja-build libusb-1.0-0-dev libudev-dev libpulse-dev libsndio-dev jack alsa-lib
 
       - name: Build
         run: ./gradlew build
@@ -32,7 +32,7 @@ jobs:
           submodules: true
 
       - name: Setup Dependencies
-        run: sudo apt-get update && sudo apt-get install -y ninja-build libusb-1.0-0-dev libudev-dev
+        run: sudo apt-get update && sudo apt-get install -y ninja-build libusb-1.0-0-dev libudev-dev libpulse-dev libsndio-dev jack alsa-lib
 
       - name: Build
         run: ./gradlew build
