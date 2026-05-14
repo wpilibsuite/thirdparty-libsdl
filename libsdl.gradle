@@ -50,18 +50,32 @@ types.each { type ->
             args "-DSDL_STATIC=ON"
         }
 
-        args "-DCMAKE_PLATFORM_NO_VERSIONED_SONAME=ON", "-DSDL_AUDIO_DEFAULT=ON", "-DSDL_X11_XSCRNSAVER=OFF", "-DSDL_X11_XTEST=OFF", "-DSDL_GPU_DEFAULT=OFF", "-DSDL_RENDER_DEFAULT=OFF", "-DSDL_CAMERA_DEFAULT=OFF", "-DSDL_POWER_DEFAULT=OFF", "-DSDL_SENSOR_DEFAULT=OFF", "-DSDL_DIALOG_DEFAULT=OFF"
-
         if (type.toLowerCase().contains("crt")) {
             args "-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded${crtType}"
         } else {
             args "-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded${crtType}DLL"
         }
 
-        args "-DSDL_UNIX_CONSOLE_BUILD=ON"
         args "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${buildDir}/lib"
         args "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${buildDir}/lib"
         args "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${buildDir}/lib"
+
+        args "-DCMAKE_PLATFORM_NO_VERSIONED_SONAME=ON"
+
+        // SDL specific options
+        args "-DSDL_TESTS=OFF", "-DSDL_TEST_LIBRARY=OFF"
+
+        // We only want audio and joysticks
+        args "-DSDL_AUDIO_DEFAULT=ON", "-DSDL_JOYSTICK_DEFAULT=ON", "-DSDL_HAPTIC_DEFAULT=ON", "-DSDL_HIDAPI_DEFAULT=ON"
+        // Disable everything else
+        args "-DSDL_VIDEO_DEFAULT=OFF", "-DSDL_GPU_DEFAULT=OFF", "-DSDL_RENDER_DEFAULT=OFF", "-DSDL_CAMERA_DEFAULT=OFF", "-DSDL_POWER_DEFAULT=OFF", "-DSDL_SENSOR_DEFAULT=OFF", "-DSDL_DIALOG_DEFAULT=OFF", "-DSDL_TRAY_DEFAULT=OFF"
+
+        // Directly link libusb on Linux
+        if (project.platform.contains("linux")) {
+            args "-DSDL_HIDAPI_LIBUSB_SHARED=OFF"
+        }
+
+        args "-DSDL_UNIX_CONSOLE_BUILD=ON"
     }
 }
 
