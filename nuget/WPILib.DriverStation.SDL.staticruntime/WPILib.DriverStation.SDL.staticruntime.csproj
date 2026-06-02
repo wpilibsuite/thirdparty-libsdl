@@ -19,7 +19,11 @@
 
   <ItemGroup>
       <None Include="runtimes\win-x64\SDL3-static.lib" Pack="true" PackagePath="static\win-x64" />
+      <None Include="runtimes\win-x64\libusb-1.0.lib" Pack="true" PackagePath="static\win-x64" />
+      <None Include="runtimes\win-x64\native\libusb-1.0.dll" Pack="true" PackagePath="runtimes\win-x64\native" />
       <None Include="runtimes\win-arm64\SDL3-static.lib" Pack="true" PackagePath="static\win-arm64" />
+      <None Include="runtimes\win-arm64\libusb-1.0.lib" Pack="true" PackagePath="static\win-arm64" />
+      <None Include="runtimes\win-arm64\native\libusb-1.0.dll" Pack="true" PackagePath="runtimes\win-arm64\native" />
       <None Include="runtimes\win-x64\SDL3-static.pdb" Pack="true" PackagePath="static\win-x64" />
       <None Include="runtimes\win-arm64\SDL3-static.pdb" Pack="true" PackagePath="static\win-arm64" />
       <None Include="runtimes\linux-x64\libSDL3.a" Pack="true" PackagePath="static\linux-x64" />

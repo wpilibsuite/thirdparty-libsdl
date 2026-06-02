@@ -1,3 +1,35 @@
+def cmakePath = { path ->
+    file(path).absolutePath.replace('\\', '/')
+}
+
+def findSevenZip = {
+    def candidates = []
+    ['ProgramFiles', 'ProgramFiles(x86)'].each { env ->
+        def dir = System.getenv(env)
+        if (dir) {
+            candidates << file("${dir}/7-Zip/7z.exe")
+        }
+    }
+    def installed = candidates.find { it.exists() }
+    return installed ? installed.absolutePath : '7z'
+}
+
+task downloadLibusb(type: Download) {
+    src "https://github.com/libusb/libusb/releases/download/v${project.libusb_version}/libusb-${project.libusb_version}.7z"
+    dest project.libusb_archive
+    overwrite false
+    onlyIfModified true
+}
+
+task extractLibusb(type: Exec) {
+    dependsOn downloadLibusb
+    inputs.file project.libusb_archive
+    outputs.dir project.libusb_extract_dir
+
+    executable findSevenZip()
+    args 'x', "-o${project.libusb_extract_dir}", project.libusb_archive, '-y'
+}
+
 task prepareLibSdlDirectories {
     mustRunAfter clean
     def build_dir = project.sdl_build_dir
@@ -15,6 +47,9 @@ def types = ['DebugStatic', 'DebugShared', 'ReleaseStatic', 'ReleaseShared', 'Re
 types.each { type ->
     project.tasks.create("configureLibSdl${type}", Exec) {
         dependsOn prepareLibSdlDirectories
+        if (project.platform.startsWith("windows-")) {
+            dependsOn extractLibusb
+        }
 
         def buildDir = "$project.sdl_build_dir/${type.toLowerCase()}"
         workingDir buildDir
@@ -72,6 +107,12 @@ types.each { type ->
 
         // Directly link libusb on Linux
         if (project.platform.contains("linux")) {
+            args "-DSDL_HIDAPI_LIBUSB_SHARED=OFF"
+        }
+        if (project.platform.startsWith("windows-")) {
+            args "-DLibUSB_INCLUDE_PATH=${cmakePath(project.libusb_include_dir)}"
+            args "-DLibUSB_LIBRARY=${cmakePath("${project.libusb_lib_dir}/libusb-1.0.lib")}"
+            args "-DSDL_HIDAPI_LIBUSB=ON"
             args "-DSDL_HIDAPI_LIBUSB_SHARED=OFF"
         }
 
