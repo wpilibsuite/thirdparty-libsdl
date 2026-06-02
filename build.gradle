@@ -71,6 +71,16 @@ ext.processors = Runtime.runtime.availableProcessors()
 ext.sdl_dir = file("SDL")
 ext.sdl_build_dir = file("build/$platform_path/SDL")
 ext.sdl_install = file("build/$platform_path/install-SDL")
+ext.libsdl_packaged_library_includes = [
+  "**/libSDL3.dylib",
+  "**/libSDL3.so",
+  "**/SDL3.dll",
+  "**/libSDL3.a",
+  "**/SDL3-static.lib",
+  "**/SDL3.lib",
+  "**/SDL3.pdb",
+  "**/SDL3-static.pdb",
+]
 
 task clean {
   doLast {

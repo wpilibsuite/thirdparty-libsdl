@@ -91,9 +91,53 @@ types.each { type ->
     }
 }
 
+types.each { type ->
+    project.tasks.create("signLibSdl${type}") {
+        dependsOn "buildLibSdl${type}"
+
+        def libDir = file("${project.sdl_build_dir}/${type.toLowerCase()}/lib")
+        def signableFiles = fileTree(libDir) {
+            include project.libsdl_packaged_library_includes
+        }
+
+        inputs.files signableFiles
+
+        onlyIf {
+            (project.platform.startsWith("windows") && project.hasProperty("signWindows")) ||
+            (project.platform == "osx-universal" && project.hasProperty("signMac"))
+        }
+
+        doLast {
+            def developerID = project.findProperty("developerID") ?: System.getenv("APPLE_DEVELOPER_ID")
+            def filesToSign = signableFiles.files.findAll { it.name.endsWith(".dll") || it.name.endsWith(".dylib") }
+            if (filesToSign.empty) {
+                println "No shared libraries found to sign for ${type}"
+                return
+            }
+
+            filesToSign.each { fileToSign ->
+                if (project.platform.startsWith("windows")) {
+                    providers.exec { ExecSpec ex ->
+                        ex.commandLine "powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+                            file("${rootDir}/signfile.ps1").absolutePath, "-FileToSign", fileToSign.absolutePath
+                    }.result.get()
+                } else {
+                    if (!developerID) {
+                        throw new GradleException("signMac requires APPLE_DEVELOPER_ID or -PdeveloperID")
+                    }
+                    providers.exec { ExecSpec ex ->
+                        ex.commandLine "codesign", "--force", "--timestamp", "--options=runtime",
+                            "--sign", developerID, fileToSign.absolutePath
+                    }.result.get()
+                }
+            }
+        }
+    }
+}
+
 // Create a "mega-task" that builds everything.
 types.each { type ->
   project.tasks.create("libSDL$type") {
-    dependsOn "buildLibSdl${type}"
+    dependsOn "signLibSdl${type}"
   }
 }

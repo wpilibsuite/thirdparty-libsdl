@@ -102,9 +102,21 @@ jobs:
           architecture: ${{ matrix.architecture }}
 
       - name: Build with Gradle
+        if: |
+          github.repository_owner != 'wpilibsuite' ||
+          !startsWith(github.ref, 'refs/tags/v')
         run: |
           @call "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Auxiliary\\Build\\${{ matrix.vc }}"
           gradlew build ${{ matrix.build-options }}
+        shell: cmd
+
+      - name: Build and Sign with Gradle
+        if: |
+          github.repository_owner == 'wpilibsuite' &&
+          startsWith(github.ref, 'refs/tags/v')
+        run: |
+          @call "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Auxiliary\\Build\\${{ matrix.vc }}"
+          gradlew build ${{ matrix.build-options }} -PsignWindows
         shell: cmd
 
       - uses: actions/upload-artifact@v4
@@ -121,7 +133,26 @@ jobs:
           submodules: true
 
       - name: Build
+        if: |
+          github.repository_owner != 'wpilibsuite' ||
+          !startsWith(github.ref, 'refs/tags/v')
         run: ./gradlew build
+
+      - name: Import Developer ID Certificate
+        if: |
+          github.repository_owner == 'wpilibsuite' &&
+          startsWith(github.ref, 'refs/tags/v')
+        uses: wpilibsuite/import-signing-certificate@v2
+        with:
+          certificate-data: ${{ secrets.APPLE_CERTIFICATE_DATA }}
+          certificate-passphrase: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          keychain-password: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
+
+      - name: Build and Sign
+        if: |
+          github.repository_owner == 'wpilibsuite' &&
+          startsWith(github.ref, 'refs/tags/v')
+        run: ./gradlew build -PsignMac
 
       - uses: actions/upload-artifact@v4
         with:
