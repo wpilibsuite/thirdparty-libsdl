@@ -105,6 +105,7 @@ types.each { type ->
 
         def lib_dir = file("${project.sdl_build_dir}/${type.toLowerCase()}/lib")
         def isWindows = project.platform.startsWith("windows-")
+        def isMac = project.platform == "osx-universal"
         // Copy libraries.
         from(lib_dir) {
             into "${project.platform_path}/${sharedFolder}"
@@ -128,6 +129,12 @@ types.each { type ->
                 into "${project.platform_path}/${sharedFolder}"
                 include "libusb-1.0.dll"
                 include "libusb-1.0.lib"
+            }
+        }
+        if (isMac) {
+            from(project.libusb_lib_dir) {
+                into "${project.platform_path}/${sharedFolder}"
+                include "libusb-1.0.0.dylib"
             }
         }
 
