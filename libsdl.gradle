@@ -1,3 +1,25 @@
+def cmakePath = { path ->
+    file(path).absolutePath.replace('\\', '/')
+}
+
+task downloadLibusb(type: Download) {
+    src "https://github.com/wpilibsuite/thirdparty-libusb/releases/download/v${project.libusb_release_version}/libusb-${project.libusb_version}-${project.libusb_archive_platform}.zip"
+    dest project.libusb_archive
+    overwrite false
+    onlyIfModified true
+    onlyIf { project.libusb_archive_platform }
+}
+
+task extractLibusb(type: Copy) {
+    dependsOn downloadLibusb
+    inputs.file project.libusb_archive
+    outputs.dir project.libusb_extract_dir
+
+    from zipTree(project.libusb_archive)
+    into project.libusb_extract_root
+    onlyIf { project.libusb_archive_platform }
+}
+
 task prepareLibSdlDirectories {
     mustRunAfter clean
     def build_dir = project.sdl_build_dir
@@ -15,6 +37,9 @@ def types = ['DebugStatic', 'DebugShared', 'ReleaseStatic', 'ReleaseShared', 'Re
 types.each { type ->
     project.tasks.create("configureLibSdl${type}", Exec) {
         dependsOn prepareLibSdlDirectories
+        if (project.platform.startsWith("windows-") || project.platform == "osx-universal") {
+            dependsOn extractLibusb
+        }
 
         def buildDir = "$project.sdl_build_dir/${type.toLowerCase()}"
         workingDir buildDir
@@ -24,6 +49,7 @@ types.each { type ->
 
         if (project.platform == "osx-universal") {
             args "-DCMAKE_OSX_ARCHITECTURES=x86_64;arm64", "-DCMAKE_OSX_DEPLOYMENT_TARGET=\"13.3\""
+            args "-DCMAKE_BUILD_WITH_INSTALL_RPATH=ON", "-DCMAKE_INSTALL_RPATH=@loader_path"
             environment "ARCHFLAGS", "-arch arm64 -arch x86_64"
         } else if (project.platform == "linux-arm64") {
             if (project.hasProperty('forcecrossbuild')) {
@@ -45,6 +71,10 @@ types.each { type ->
         if (type.toLowerCase().contains("shared")) {
             args "-DSDL_SHARED=ON"
             args "-DSDL_STATIC=OFF"
+            if (project.platform.startsWith("windows-")) {
+                args "-DCMAKE_SHARED_LINKER_FLAGS=/DEPENDENTLOADFLAG:0x1100"
+                args "-DCMAKE_MODULE_LINKER_FLAGS=/DEPENDENTLOADFLAG:0x1100"
+            }
         } else {
             args "-DSDL_SHARED=OFF"
             args "-DSDL_STATIC=ON"
@@ -72,6 +102,17 @@ types.each { type ->
 
         // Directly link libusb on Linux
         if (project.platform.contains("linux")) {
+            args "-DSDL_HIDAPI_LIBUSB_SHARED=OFF"
+        }
+        if (project.platform.startsWith("windows-")) {
+            args "-DLibUSB_INCLUDE_PATH=${cmakePath(project.libusb_include_dir)}"
+            args "-DLibUSB_LIBRARY=${cmakePath("${project.libusb_lib_dir}/libusb-1.0.lib")}"
+            args "-DSDL_HIDAPI_LIBUSB=ON"
+            args "-DSDL_HIDAPI_LIBUSB_SHARED=OFF"
+        } else if (project.platform == "osx-universal") {
+            args "-DLibUSB_INCLUDE_PATH=${cmakePath(project.libusb_include_dir)}"
+            args "-DLibUSB_LIBRARY=${cmakePath("${project.libusb_lib_dir}/libusb-1.0.0.dylib")}"
+            args "-DSDL_HIDAPI_LIBUSB=ON"
             args "-DSDL_HIDAPI_LIBUSB_SHARED=OFF"
         }
 
