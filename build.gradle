@@ -6,7 +6,7 @@ plugins {
 }
 
 // Project Version
-ext.pub_version = "3.4.8-2"
+ext.pub_version = "3.4.10-1"
 ext.libusb_version = "1.0.30"
 ext.libusb_release_version = "1.0.30-1"
 
@@ -97,6 +97,16 @@ ext.processors = Runtime.runtime.availableProcessors()
 ext.sdl_dir = file("SDL")
 ext.sdl_build_dir = file("build/$platform_path/SDL")
 ext.sdl_install = file("build/$platform_path/install-SDL")
+ext.libsdl_packaged_library_includes = [
+  "**/libSDL3.dylib",
+  "**/libSDL3.so",
+  "**/SDL3.dll",
+  "**/libSDL3.a",
+  "**/SDL3-static.lib",
+  "**/SDL3.lib",
+  "**/SDL3.pdb",
+  "**/SDL3-static.pdb",
+]
 ext.libusb_archive = file("$buildDir/downloads/libusb-${libusb_version}-${libusb_archive_platform}.zip")
 ext.libusb_extract_root = file("$buildDir/libusb")
 ext.libusb_extract_dir = file("${libusb_extract_root}/libusb-${libusb_version}-${libusb_archive_platform}")
