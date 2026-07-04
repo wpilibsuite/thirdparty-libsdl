@@ -103,6 +103,7 @@ types.each { type ->
         // Directly link libusb on Linux
         if (project.platform.contains("linux")) {
             args "-DSDL_HIDAPI_LIBUSB_SHARED=OFF"
+            args "-DSDL_DBUS=ON"
         }
         if (project.platform.startsWith("windows-")) {
             args "-DLibUSB_INCLUDE_PATH=${cmakePath(project.libusb_include_dir)}"
