@@ -3,10 +3,10 @@ def outputs_dir = file("$buildDir/outputs")
 def libsdl_license_file = file("SDL/LICENSE.txt")
 
 // Define names for publishing.
-def base_artifact_id = "libsdl"
+def base_artifact_id = project.libsdl_artifact_id
 def artifact_group_id = "org.wpilib.thirdparty"
 
-def zip_base_name = "_GROUP_org_wpilib_thirdparty_ID_libsdl_CLS"
+def zip_base_name = "_GROUP_org_wpilib_thirdparty_ID_${base_artifact_id}_CLS"
 
 // Generate version number.
 def version_file = file("$outputs_dir/version.txt")

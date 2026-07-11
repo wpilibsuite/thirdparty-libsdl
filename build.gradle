@@ -90,13 +90,16 @@ ext.platform_path = get_platform_path(ext.platform)
 ext.platform_classifier = ext.platform.replaceFirst('-', '').replace('_', '-')
 ext.libusb_vs_arch_dir = get_libusb_vs_arch_dir(ext.platform)
 ext.libusb_archive_platform = get_libusb_archive_platform(ext.platform)
+ext.libsdl_gpu_enabled = project.hasProperty("libsdlGpu")
+ext.libsdl_artifact_id = ext.libsdl_gpu_enabled ? "libsdl-gpu" : "libsdl"
+ext.libsdl_variant_dir = ext.libsdl_gpu_enabled ? "SDL-gpu" : "SDL"
 
 // Get the number of processors available to build.
 ext.processors = Runtime.runtime.availableProcessors()
 
 ext.sdl_dir = file("SDL")
-ext.sdl_build_dir = file("build/$platform_path/SDL")
-ext.sdl_install = file("build/$platform_path/install-SDL")
+ext.sdl_build_dir = file("build/$platform_path/$libsdl_variant_dir")
+ext.sdl_install = file("build/$platform_path/install-$libsdl_variant_dir")
 ext.libsdl_packaged_library_includes = [
   "**/libSDL3.dylib",
   "**/libSDL3.so",

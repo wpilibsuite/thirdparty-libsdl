@@ -39,14 +39,15 @@ def products = file('products')
 
 def pubVersion = file('products/version.txt').text.trim().replaceAll('-','.')
 
+def baseArtifactMarker = '_ID_libsdl_CLS'
 def foundArtifacts = []
 def foundStaticArtifacts = []
 
 products.eachFile {
-    if (it.name.contains('sharedcrt')) {
+    if (it.name.contains(baseArtifactMarker) && it.name.contains('sharedcrt')) {
         foundArtifacts << it
     }
-    if (it.name.contains('staticcrt')) {
+    if (it.name.contains(baseArtifactMarker) && it.name.contains('staticcrt')) {
         foundStaticArtifacts << it
     }
 }

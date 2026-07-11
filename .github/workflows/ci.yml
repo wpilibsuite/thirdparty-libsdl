@@ -4,7 +4,15 @@ on: [ push, pull_request ]
 
 jobs:
   build-linux:
-    name: "Build - Linux"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - artifact-name: Linux
+            build-options: ""
+          - artifact-name: Linux-GPU
+            build-options: "-PlibsdlGpu"
+    name: "Build - ${{ matrix.artifact-name }}"
     runs-on: ubuntu-latest
     container: wpilib/ubuntu-base:24.04
     steps:
@@ -13,18 +21,50 @@ jobs:
           submodules: true
 
       - name: Setup Dependencies
-        run: sudo apt-get update && sudo apt-get install -y ninja-build libusb-1.0-0-dev libudev-dev libpulse-dev libsndio-dev libjack-dev libpipewire-0.3-dev libasound2-dev
+        run: >
+          sudo apt-get update && sudo apt-get install -y
+          ninja-build
+          libusb-1.0-0-dev
+          libudev-dev
+          libpulse-dev
+          libsndio-dev
+          libjack-dev
+          libpipewire-0.3-dev
+          libasound2-dev
+          libvulkan-dev
+          libx11-dev
+          libxext-dev
+          libxrandr-dev
+          libxcursor-dev
+          libxi-dev
+          libxfixes-dev
+          libxrender-dev
+          libxss-dev
+          libxtst-dev
+          libwayland-dev
+          libxkbcommon-dev
+          wayland-protocols
+          libegl1-mesa-dev
+          libgl1-mesa-dev
 
       - name: Build
-        run: ./gradlew build
+        run: ./gradlew build ${{ matrix.build-options }}
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Linux
+          name: ${{ matrix.artifact-name }}
           path: build/allOutputs
 
   build-linux-arm64:
-    name: "Build - Linux Arm64"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - artifact-name: LinuxArm64
+            build-options: ""
+          - artifact-name: LinuxArm64-GPU
+            build-options: "-PlibsdlGpu"
+    name: "Build - ${{ matrix.artifact-name }}"
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
@@ -32,14 +72,38 @@ jobs:
           submodules: true
 
       - name: Setup Dependencies
-        run: sudo apt-get update && sudo apt-get install -y ninja-build libusb-1.0-0-dev libudev-dev libpulse-dev libsndio-dev libjack-dev libpipewire-0.3-dev libasound2-dev
+        run: >
+          sudo apt-get update && sudo apt-get install -y
+          ninja-build
+          libusb-1.0-0-dev
+          libudev-dev
+          libpulse-dev
+          libsndio-dev
+          libjack-dev
+          libpipewire-0.3-dev
+          libasound2-dev
+          libvulkan-dev
+          libx11-dev
+          libxext-dev
+          libxrandr-dev
+          libxcursor-dev
+          libxi-dev
+          libxfixes-dev
+          libxrender-dev
+          libxss-dev
+          libxtst-dev
+          libwayland-dev
+          libxkbcommon-dev
+          wayland-protocols
+          libegl1-mesa-dev
+          libgl1-mesa-dev
 
       - name: Build
-        run: ./gradlew build
+        run: ./gradlew build ${{ matrix.build-options }}
 
       - uses: actions/upload-artifact@v4
         with:
-          name: LinuxArm64
+          name: ${{ matrix.artifact-name }}
           path: build/allOutputs
 
   # build-linux-arm64:
@@ -84,10 +148,18 @@ jobs:
           - artifact-name: Win64
             architecture: x64
             vc: vcvars64.bat
+          - artifact-name: Win64-GPU
+            architecture: x64
+            vc: vcvars64.bat
+            build-options: "-PlibsdlGpu"
           - artifact-name: WinArm64
             architecture: x64
             vc: vcvarsamd64_arm64.bat
             build-options: "-Pforcecrossbuild=windows-arm64"
+          - artifact-name: WinArm64-GPU
+            architecture: x64
+            vc: vcvarsamd64_arm64.bat
+            build-options: "-Pforcecrossbuild=windows-arm64 -PlibsdlGpu"
     name: "Build - ${{ matrix.artifact-name }}"
     runs-on: windows-2022
     steps:
@@ -132,7 +204,15 @@ jobs:
           path: build/allOutputs
 
   build-macos:
-    name: "Build - macOS"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - artifact-name: macOS
+            build-options: ""
+          - artifact-name: macOS-GPU
+            build-options: "-PlibsdlGpu"
+    name: "Build - ${{ matrix.artifact-name }}"
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
@@ -143,7 +223,7 @@ jobs:
         if: |
           github.repository_owner != 'wpilibsuite' ||
           !startsWith(github.ref, 'refs/tags/v')
-        run: ./gradlew build
+        run: ./gradlew build ${{ matrix.build-options }}
 
       - name: Import Developer ID Certificate
         if: |
@@ -159,13 +239,13 @@ jobs:
         if: |
           github.repository_owner == 'wpilibsuite' &&
           startsWith(github.ref, 'refs/tags/v')
-        run: ./gradlew build -PsignMac
+        run: ./gradlew build ${{ matrix.build-options }} -PsignMac
         env:
           APPLE_DEVELOPER_ID: ${{ secrets.APPLE_DEVELOPER_ID }}
 
       - uses: actions/upload-artifact@v4
         with:
-          name: macOS
+          name: ${{ matrix.artifact-name }}
           path: build/allOutputs
 
   nuget:
