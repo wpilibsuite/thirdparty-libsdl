@@ -95,10 +95,19 @@ types.each { type ->
         // SDL specific options
         args "-DSDL_TESTS=OFF", "-DSDL_TEST_LIBRARY=OFF"
 
-        // We only want audio and joysticks
+        // We only want audio and joysticks in the base variant. The GPU
+        // variant also needs video, GPU, and SDL_Render's software renderer.
         args "-DSDL_AUDIO_DEFAULT=ON", "-DSDL_JOYSTICK_DEFAULT=ON", "-DSDL_HAPTIC_DEFAULT=ON", "-DSDL_HIDAPI_DEFAULT=ON"
+        if (project.libsdl_gpu_enabled) {
+            args "-DSDL_VIDEO_DEFAULT=ON", "-DSDL_GPU_DEFAULT=ON", "-DSDL_RENDER_DEFAULT=ON"
+            args "-DSDL_OPENGL=OFF", "-DSDL_OPENGLES=OFF"
+            args "-DSDL_RENDER_D3D=OFF", "-DSDL_RENDER_D3D11=OFF", "-DSDL_RENDER_D3D12=OFF"
+            args "-DSDL_RENDER_METAL=OFF", "-DSDL_RENDER_GPU=OFF", "-DSDL_RENDER_VULKAN=OFF"
+        } else {
+            args "-DSDL_VIDEO_DEFAULT=OFF", "-DSDL_GPU_DEFAULT=OFF", "-DSDL_RENDER_DEFAULT=OFF"
+        }
         // Disable everything else
-        args "-DSDL_VIDEO_DEFAULT=OFF", "-DSDL_GPU_DEFAULT=OFF", "-DSDL_RENDER_DEFAULT=OFF", "-DSDL_CAMERA_DEFAULT=OFF", "-DSDL_POWER_DEFAULT=OFF", "-DSDL_SENSOR_DEFAULT=OFF", "-DSDL_DIALOG_DEFAULT=OFF", "-DSDL_TRAY_DEFAULT=OFF"
+        args "-DSDL_CAMERA_DEFAULT=OFF", "-DSDL_POWER_DEFAULT=OFF", "-DSDL_SENSOR_DEFAULT=OFF", "-DSDL_DIALOG_DEFAULT=OFF", "-DSDL_TRAY_DEFAULT=OFF"
 
         // Directly link libusb on Linux
         if (project.platform.contains("linux")) {
