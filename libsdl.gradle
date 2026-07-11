@@ -78,6 +78,7 @@ types.each { type ->
         } else {
             args "-DSDL_SHARED=OFF"
             args "-DSDL_STATIC=ON"
+            args "-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
         }
 
         if (type.toLowerCase().contains("crt")) {
