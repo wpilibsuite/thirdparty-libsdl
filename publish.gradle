@@ -112,7 +112,7 @@ types.each { type ->
             into "${project.platform_path}/${sharedFolder}"
             include project.libsdl_packaged_library_includes
         }
-        if (packageLibusb && isWindows && type.toLowerCase().contains("shared")) {
+        if (isWindows && type.toLowerCase().contains("shared")) {
             from(project.libusb_lib_dir) {
                 into "${project.platform_path}/${sharedFolder}"
                 include "libusb-1.0.dll"
@@ -125,7 +125,7 @@ types.each { type ->
                 include "libusb-1.0.lib"
             }
         }
-        if (packageLibusb && isMac) {
+        if (isMac && (packageLibusb || type.toLowerCase().contains("shared"))) {
             from(project.libusb_lib_dir) {
                 into "${project.platform_path}/${sharedFolder}"
                 include "libusb-1.0.0.dylib"
