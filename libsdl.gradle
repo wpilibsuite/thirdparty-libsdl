@@ -110,20 +110,23 @@ types.each { type ->
         // Disable everything else
         args "-DSDL_CAMERA_DEFAULT=OFF", "-DSDL_POWER_DEFAULT=OFF", "-DSDL_SENSOR_DEFAULT=OFF", "-DSDL_DIALOG_DEFAULT=OFF", "-DSDL_TRAY_DEFAULT=OFF"
 
-        // Directly link libusb on Linux
+        def libusbShared = project.libsdl_gpu_enabled ? "ON" : "OFF"
+
+        // Directly link libusb for the normal variant. The GPU variant uses
+        // SDL's runtime loading path so consumers do not need to link libusb.
         if (project.platform.contains("linux")) {
-            args "-DSDL_HIDAPI_LIBUSB_SHARED=OFF"
+            args "-DSDL_HIDAPI_LIBUSB_SHARED=${libusbShared}"
         }
         if (project.platform.startsWith("windows-")) {
             args "-DLibUSB_INCLUDE_PATH=${cmakePath(project.libusb_include_dir)}"
             args "-DLibUSB_LIBRARY=${cmakePath("${project.libusb_lib_dir}/libusb-1.0.lib")}"
             args "-DSDL_HIDAPI_LIBUSB=ON"
-            args "-DSDL_HIDAPI_LIBUSB_SHARED=OFF"
+            args "-DSDL_HIDAPI_LIBUSB_SHARED=${libusbShared}"
         } else if (project.platform == "osx-universal") {
             args "-DLibUSB_INCLUDE_PATH=${cmakePath(project.libusb_include_dir)}"
             args "-DLibUSB_LIBRARY=${cmakePath("${project.libusb_lib_dir}/libusb-1.0.0.dylib")}"
             args "-DSDL_HIDAPI_LIBUSB=ON"
-            args "-DSDL_HIDAPI_LIBUSB_SHARED=OFF"
+            args "-DSDL_HIDAPI_LIBUSB_SHARED=${libusbShared}"
         }
 
         args "-DSDL_UNIX_CONSOLE_BUILD=ON"
