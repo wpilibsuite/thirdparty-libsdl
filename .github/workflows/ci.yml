@@ -43,6 +43,7 @@ jobs:
           libxtst-dev
           libwayland-dev
           libxkbcommon-dev
+          libdecor-0-dev
           wayland-protocols
           libegl1-mesa-dev
           libgl1-mesa-dev
@@ -94,6 +95,7 @@ jobs:
           libxtst-dev
           libwayland-dev
           libxkbcommon-dev
+          libdecor-0-dev
           wayland-protocols
           libegl1-mesa-dev
           libgl1-mesa-dev
